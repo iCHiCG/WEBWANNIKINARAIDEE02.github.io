@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <link rel="icon" type="image" href="img/icon.jpg">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>วันนี้กินอะไรดีน้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#ffffff;
+            --surface:#f4f5f7;
+            --text:#371f2f;
+            --muted:#6b7280;
+            --accent:#eb25c0;
+            --radius:14px;
+            --container:1000px;
+            font-family:'Kanit', sans-serif;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background: linear-gradient(135deg,#6f00ff,#facc15,#ff2600);background-size:400% 400%;animation:gradientMove 7s ease infinite;color:var(--text);}
+        .wrap{max-width:var(--container);margin:auto;padding:24px}
+
+        /* HEADER */
+        header{display:flex;justify-content:center;padding:24px 0}
+        header img{width:auto;height:400px;border-radius:20px;}
+
+        /* CARD MAIN */
+        .main-grid{
+            background:var(--bg);
+            border-radius:var(--radius);
+            padding:28px;
+            display:grid;
+            grid-template-columns:320px 1fr;
+            gap:24px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.06);
+        }
+        @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+        @media(max-width:600px){header img{height:200px}}
+
+        /* LEFT */
+        .left audio{width:100%;margin-bottom:16px}
+        .left img{width:100%;border-radius:var(--radius)}
+
+        /* RIGHT */
+        .right{display:flex;flex-direction:column;align-items:center;text-align:center}
+        .right button{
+            border:0;
+            background:var(--accent);
+            padding:14px 26px;
+            border-radius:var(--radius);
+            cursor:pointer;
+            color:white;
+            font-size:20px;
+            font-weight:700;
+            margin:12px 0;
+            box-shadow:0 8px 24px rgba(235, 37, 172, 0.25);
+            transition:transform .2s ease, box-shadow .2s ease;
+            position:relative;
+            overflow:hidden;
+        }
+        .right button:active{transform:scale(0.93);}
+        .right button:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(235, 37, 172, 0.35);}
+        .right button::after{
+            content:"";
+            position:absolute;
+            left:-50%; top:0;
+            width:200%; height:100%;
+            background:rgba(255,255,255,0.25);
+            transform:skewX(-20deg);
+            opacity:0;
+        }
+        .right button.shine::after{
+            animation:shineMove .6s forwards;
+        }
+        @keyframes shineMove{
+            0%{left:-50%;opacity:0}
+            30%{opacity:1}
+            100%{left:120%;opacity:0}
+        }
+        .right button:hover{opacity:.95}
+        #randomImage{width:380px;max-width:100%;border-radius:var(--radius);margin-top:12px}
+
+        footer{text-align:center;color:var(--muted);margin:40px 0}
+        @keyframes gradientMove {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        @keyframes gradientMove{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+        /* Loading Animation in Button */
+        .right button.loading {
+            pointer-events: none;
+            opacity: .8;
+        }
+
+        .loader {
+            border: 3px solid rgba(255,255,255,0.4);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #randomImage.show {
+            animation: pop 0.45s ease forwards;
+        }
+
+        @keyframes pop {
+            0% {transform: scale(.7); opacity:0}
+            100% {transform: scale(1); opacity:1}
+        }
+
+        /* History / controls */
+        .controls-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:6px}
+        .small-btn{
+            background:#fff;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:12px;font-weight:700;color:var(--text);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06);
+        }
+        .small-btn:active{transform:scale(.97)}
+        .info-tip{font-size:13px;color:var(--muted);margin-top:8px}
+
+        /* history list */
+        .history{
+            margin-top:18px;
+            width:100%;
+            max-width:420px;
+            text-align:left;
+        }
+        .history h4{margin:0 0 8px 0;font-size:15px}
+        .history-list{background: #fff;padding:10px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.04);}
+        .history-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px dashed rgba(0,0,0,0.04);font-size:14px}
+        .history-item:last-child{border-bottom:0}
+        .history-item .meta{color:var(--muted);font-size:12px}
+        .fav {color:#ff6aa6;font-weight:800;margin-left:8px}
+
+        /* feedback */
+        .toast{
+            position:fixed;left:50%;transform:translateX(-50%);bottom:30px;background:#222;color:white;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .2s;
+        }
+        .toast.show{opacity:1;pointer-events:auto}
+
+        /* Music Player Style */
+        :root{
+            --accent: #eb25c0;
+            --bg-player: #fff;
+            --muted: #8b8990;
+            --shadow: rgba(0,0,0,0.12);
+            --radius: 16px;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .music-player{
+            display:flex;
+            gap:18px;
+            align-items:center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,250,0.95));
+            padding:14px;
+            border-radius:var(--radius);
+            max-width:760px;
+            box-shadow:0 10px 30px var(--shadow);
+            margin:18px auto;
+        }
+
+        .music-player .cover{
+            width:120px;
+            height:120px;
+            object-fit:cover;
+            border-radius:12px;
+            box-shadow:0 8px 20px rgba(0,0,0,0.08);
+            flex:0 0 120px;
+        }
+
+        .meta{flex:1; display:flex; flex-direction:column; gap:10px}
+        .title{
+            font-size:18px;
+            font-weight:700;
+            color:#321324;
+        }
+        .subtitle{
+            font-size:13px;
+            color:var(--muted);
+            margin-top:-6px;
+        }
+
+        /* controls row */
+        .controls{display:flex;align-items:center;gap:12px}
+        .play-btn{
+            width:56px;height:56px;border-radius:14px;border:0;
+            background:linear-gradient(135deg,var(--accent),#ff7ab3);
+            color:white;font-size:20px;font-weight:800;
+            box-shadow:0 8px 22px rgba(235,37,172,0.22);
+            cursor:pointer;display:flex;align-items:center;justify-content:center;
+            transition:transform .16s ease;
+        }
+        .play-btn:active{transform:scale(.95)}
+        .play-btn.pause{background:linear-gradient(135deg,#444,#222);}
+
+        /* progress */
+        .progress-wrap{
+            height:8px;
+            background:rgba(0,0,0,0.06);
+            border-radius:999px;
+            width:100%;
+            overflow:hidden;
+            cursor:pointer;
+            position:relative;
+        }
+        .progress-bar{
+            height:100%;
+            width:0%;
+            background: linear-gradient(90deg,var(--accent),#ff7ab3);
+            border-radius:999px;
+            transition:width .08s linear;
+        }
+
+        /* times */
+        .times{font-size:12px;color:var(--muted);min-width:70px;text-align:right}
+
+        /* heart animation */
+        .heart{
+            width:44px;height:44px;border-radius:50%;
+            background:linear-gradient(135deg,#ff6aa6,#ffcfef);
+            box-shadow:0 8px 18px rgba(255,90,160,0.18), inset 0 -6px 18px rgba(255,255,255,0.12);
+            margin-left:12px;
+            position:relative;
+            transform:scale(1);
+            transition:transform .12s linear;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .heart::after{
+            content:'♡';
+            font-size:20px;color:white;mix-blend-mode:screen;
+        }
+        .heart.pulse{
+            animation:beat .6s infinite;
+        }
+        @keyframes beat{
+            0%{transform:scale(1);}
+            30%{transform:scale(1.18);}
+            60%{transform:scale(1);}
+            100%{transform:scale(1);}
+        }
+
+        /* responsive */
+        @media(max-width:600px){
+            .music-player{flex-direction:column;align-items:center}
+            .meta{text-align:center}
+            .times{text-align:center}
+            .heart{margin-left:0}
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+
+        <header>
+            <img src="img/สุ่มอาหาร.png" alt="Banner" />
+        </header>
+
+        <div class="main-grid">
+            <div class="left">
+                <div class="music-player" id="musicPlayer">
+                    <img class="cover" id="coverImg" src="https://www.dochord.com/wp-content/uploads/2018/01/%E0%B8%95%E0%B8%B1%E0%B9%8A%E0%B8%81%E0%B9%81%E0%B8%95%E0%B8%99-6-%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%84%E0%B8%A3%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%A5%E0%B8%B0%E0%B8%84%E0%B8%99.jpg" alt="ปกเพลง">
+                    <div class="meta">
+                        <div class="title">เสียงรอหิว ฟังได้ยามเหงา</div>
+                        <div class="subtitle">ลิขสิทธิ์จาก GMM GRAMMY GOLD</div>
+
+                        <div class="controls">
+                            <button class="play-btn" id="playBtn" aria-label="เล่นเพลง">
+                                ▶
+                            </button>
+
+                            <div class="progress-wrap" id="progressWrap" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+
+                            <div class="times">
+                                <span id="curTime">0:00</span>
+                                <span id="durTime">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="heart" id="heart"></div>
+                    </div>
+
+                    <audio id="audio" preload="auto">
+                        <source src="sound/Y2meta.app - รักได้ครั้งละคน เชื่อใจได้คนละครั้ง - ตั๊กแตน ชลดา (128 kbps).mp3" type="audio/mpeg">
+                        ไม่รองรับเสียงรอหิวน้า
+                    </audio>
+                </div>
+
+                <script>
+                    (function(){
+                        const audio = document.getElementById('audio');
+                        const playBtn = document.getElementById('playBtn');
+                        const progressBar = document.getElementById('progressBar');
+                        const progressWrap = document.getElementById('progressWrap');
+                        const curTime = document.getElementById('curTime');
+                        const durTime = document.getElementById('durTime');
+                        const heart = document.getElementById('heart');
+
+                        // helper: format seconds to M:SS
+                        function formatTime(t){
+                            if (isNaN(t)) return '0:00';
+                            const m = Math.floor(t/60);
+                            const s = Math.floor(t%60).toString().padStart(2,'0');
+                            return `${m}:${s}`;
+                        }
+
+                        // load metadata to show duration
+                        audio.addEventListener('loadedmetadata', ()=> {
+                            durTime.textContent = formatTime(audio.duration);
+                        });
+
+                        // update progress while playing
+                        audio.addEventListener('timeupdate', ()=> {
+                            const pct = (audio.currentTime / audio.duration) * 100 || 0;
+                            progressBar.style.width = pct + '%';
+                            curTime.textContent = formatTime(audio.currentTime);
+                        });
+
+                        // play / pause toggle
+                        playBtn.addEventListener('click', ()=>{
+                            if (audio.paused){
+                                audio.play();
+                            } else {
+                                audio.pause();
+                            }
+                        });
+
+                        // update button state
+                        audio.addEventListener('play', ()=>{ playBtn.textContent = '❚❚'; playBtn.classList.add('pause'); heart.classList.add('pulse'); });
+                        audio.addEventListener('pause', ()=>{ playBtn.textContent = '▶'; playBtn.classList.remove('pause'); heart.classList.remove('pulse'); });
+                        audio.addEventListener('ended', ()=>{ playBtn.textContent = '▶'; playBtn.classList.remove('pause'); heart.classList.remove('pulse'); audio.currentTime = 0; });
+
+                        // click on progress to seek
+                        progressWrap.addEventListener('click', (e)=>{ const rect = progressWrap.getBoundingClientRect(); const x = e.clientX - rect.left; const pct = x / rect.width; audio.currentTime = pct * audio.duration; });
+
+                        // optional: clicking cover toggles play
+                        document.getElementById('coverImg').addEventListener('click', ()=>{ if (audio.paused) audio.play(); else audio.pause(); });
+
+                        // preload (improve UX)
+                        audio.load();
+
+                        // fallback: if metadata not ready, try set duration text later
+                        setTimeout(()=> { if (isNaN(audio.duration) === false) durTime.textContent = formatTime(audio.duration); }, 1000);
+
+                    })();
+                </script>
+
+                <a href="https://tungngern.krungthai.com/" ><img src="คนละครึ่งเด้งดึ๋ง.gif" alt="Profile Animation"></a>
+                
+                <img src="img/Pro.gif" alt="Profile Animation">
+
+            </div>
+
+            <div class="right">
+                <img src="img/Kin.png" alt="title" style="width:300px;height:auto;">
+
+                <button id="randomBtn" onclick="changeImage();" class="btn-view">
+                    กดตรงนี้เลยสิคะ🤩
+                </button>
+
+
+                <div class="info-tip" id="lastTip">ร้านล่าสุด: ยังไม่มีน้า ลองกดสุ่มดูสิๆๆ</div>
+                
+
+
+                <script>
+                   
+                    const clickAudio = new Audio('sound/51.wav'); 
+
+                    const images = [
+                        '1.png','2.png','3.png','4.png','5.png','6.png',
+                        '7.png','9.png','10.png','11.png','12.png',
+                        '13.png','14.png','15.png'
+                    ];
+
+                    const resultSounds = [
+                        'sound/49.wav',
+                        'sound/50.wav',
+                        'sound/To Be Continued - Sound Effect [Perfect Cut].mp3',
+                        'sound/58.wav',
+                        'sound/59.wav',
+                        'sound/60.wav',
+                    ];
+                    const foodNames = {
+                        '1.png': 'เหนียวไก่ เจ้กุ้ง',
+                        '2.png': 'ตามสั่ง เจ้ไก่',
+                        '3.png': 'ก๋วยเตี๋ยว ลั่นทม ภานุรัตน์',
+                        '4.png': 'ข้าวราดแกง รัตนศรี มาตสาลี',
+                        '5.png': 'ก๋วยเตี๋ยวน่องไก่ตุ๋น ร้านไก่ใหญ่ชุมพล',
+                        '6.png': 'ก๋วยเตี๋ยวหมู&ไก่ นุชจิรา ศรีนาเรียง',
+                        '7.png': 'ข้าวขาหมู ร้านโอ๋ครับ',
+                        '9.png': 'กินข้าวราดแกง ข้าวราดแกง&ก๋วยเตี๋ยว ร้านอารีย์',
+                        '9.png': 'กินก๋วยเตี๋ยว ข้าวราดแกง&ก๋วยเตี๋ยว ร้านอารีย์', 
+                        '10.png': 'ลูกชิ้นทอด ยายบุษ',
+                        '11.png': 'ไก่เกาหลี พวงเพชร สุขสำราญ',
+                        '12.png': 'เกี๊ยว จันยาลักษณ์ แซ่พัว',
+                        '13.png': 'ลูกชิ้นนึ่ง&ทอด ถวิล วรสิษฐ',
+                        '14.png': 'ซูชิญี่ปุ่น ปังปอนด์',                          
+                        '15.png': 'กินซาลาขนมจีบ ซาลาเปา&ขนมจีบ ณงค์ศักดิ์ ช่วยเงิน',
+                        '15.png': 'กินซาลาเปา ซาลาเปา&ขนมจีบ ณงค์ศักดิ์ ช่วยเงิน',
+                    };
+                    
+                    function getDisplayName(filename){
+                        return foodNames[filename] || filename;
+                    }
+
+                    function getRandomImage(){
+                        return images[Math.floor(Math.random() * images.length)];
+                    }
+                    function getRandomSound(){
+                        return resultSounds[Math.floor(Math.random() * resultSounds.length)];
+                    }
+
+                    /* --- ประวัด --- */
+                    const STORAGE_KEY = 'platonggo_history_v1';
+                    const MAX_HISTORY = 20;
+
+                    function loadHistory(){
+                        try{
+                            const raw = localStorage.getItem(STORAGE_KEY);
+                            return raw ? JSON.parse(raw) : [];
+                        }catch(e){ return []; }
+                    }
+                    function saveHistory(list){
+                        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+                    }
+                    function pushHistory(item){
+                        const h = loadHistory();
+                        h.unshift(item);
+                        if (h.length > MAX_HISTORY) h.splice(MAX_HISTORY);
+                        saveHistory(h);
+                        renderHistory();
+                    }
+                    
+                    /* --- ฟังก์ชัน: ล้างประวัติ --- */
+                    function clearHistory(){
+                        if(confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติการสุ่มทั้งหมด?')){
+                            localStorage.removeItem(STORAGE_KEY);
+                            renderHistory(); 
+                            document.getElementById('lastTip').textContent = 'ร้านล่าสุด: ยังไม่มีน้า ลองกดสุ่มดูสิๆๆ'; 
+                            showToast('ล้างประวัติเรียบร้อยแล้ว🗑️');
+                        }
+                    }
+                    /* ----------------------------- */
+
+                    function renderHistory(){
+                        let container = document.getElementById('historyList');
+                        if (!container) return;
+                        const h = loadHistory();
+                        if (h.length === 0){ container.innerHTML = '<div style="padding:12px;color:var(--muted)">ยังไม่มีประวัติการสุ่ม</div>'; return; }
+                        container.innerHTML = '';
+                        h.forEach(i=>{
+                            const div = document.createElement('div');
+                            div.className = 'history-item';
+                            const left = document.createElement('div');
+                            const nameToShow = i.displayName || i.filename;
+                            left.innerHTML = `<div>${nameToShow}${i.favorite?'<span class="fav"> ★</span>':''}</div><div class="meta">${i.time}</div>`;
+                            const right = document.createElement('div');
+                            const btnView = document.createElement('button');
+                            btnView.className = 'small-btn';
+                            btnView.textContent = 'Replay';
+                            btnView.onclick = ()=>{ applyHistoryItem(i); }; 
+                            right.appendChild(btnView);
+                            div.appendChild(left);
+                            div.appendChild(right);
+                            container.appendChild(div);
+                        });
+                    }
+
+                    function applyHistoryItem(item){
+                        const img = document.getElementById('randomImage');
+                        img.src = item.filename; 
+                        img.classList.add('show');
+                        setLastTip(item.filename, item.favorite); 
+                        const s = new Audio(getRandomSound());
+                        s.play();
+                    }
+
+                    function setLastTip(filename, favorite){
+                        const el = document.getElementById('lastTip');
+                        if (filename === '—' || !filename) {
+                            el.textContent = 'ร้านล่าสุด: ยังไม่มีน้า ลองกดสุ่มดูสิๆๆ';
+                            return;
+                        }
+                        const displayName = getDisplayName(filename);
+                        el.textContent = `ร้านล่าสุด: ${displayName}` + (favorite ? ' ★ (โปรด)' : '');
+                    }
+
+                    /* --- Main changeImage function (สุ่ม + บันทึก) --- */
+                    function changeImage(){
+                        // เล่นเสียงคลิกทันทีที่กดปุ่ม
+                        clickAudio.play().catch(e => console.log("Audio play failed:", e)); 
+                        
+                        const btn = document.getElementById('randomBtn');
+                        const img = document.getElementById('randomImage');
+
+                        // loader state
+                        btn.classList.add("loading");
+                        const oldHTML = btn.innerHTML;
+                        btn.innerHTML = `<span class="loader"></span>กำลังหาร้านเด็ดๆสำหรับวันนี้อยู่น้า อดใจหน่อยๆๆ!!`;
+
+                        img.classList.remove("show");
+                        img.src = 'รอหน่อย.gif';
+
+                        const wait = Math.floor(Math.random()*3000)+500; 
+
+                        setTimeout(()=>{
+                            const chosen = getRandomImage();
+                            img.src = chosen;
+                            img.classList.add("show");
+
+                            // random result sound (เสียงผลลัพธ์)
+                            const s = new Audio(getRandomSound());
+                            s.play();
+
+                            // save to history with timestamp
+                            const now = new Date();
+                            const timeStr = now.toLocaleString('th-TH', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'numeric' });
+                            
+                            const item = { 
+                                filename: chosen,
+                                displayName: getDisplayName(chosen),
+                                time: timeStr, 
+                                favorite: false 
+                            };
+                            pushHistory(item);
+
+                            // set last tip
+                            setLastTip(chosen, false);
+
+                            // restore button
+                            btn.classList.remove("loading");
+                            btn.innerHTML = oldHTML;
+
+                            // visual shine
+                            btn.classList.add('shine');
+                            setTimeout(()=>btn.classList.remove('shine'), 700);
+
+                        }, wait);
+                    }
+
+                    /* --- Favorite / Share / Copy handlers --- */
+                    document.addEventListener('DOMContentLoaded', ()=>{
+                        // render existing history
+                        const historyContainer = document.createElement('div');
+                        historyContainer.className = 'history';
+                        historyContainer.innerHTML = `<h4>ประวัติการสุ่ม</h4><div id="historyList" class="history-list"></div>`;
+                        document.querySelector('.right').appendChild(historyContainer);
+                        renderHistory();
+
+                        const favBtn = document.getElementById('favBtn');
+                        const shareBtn = document.getElementById('shareBtn');
+                        const copyBtn = document.getElementById('copyBtn');
+                        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+                        
+                        // เชื่อมต่อปุ่มล้างประวัติ
+                        if (clearHistoryBtn) {
+                            clearHistoryBtn.addEventListener('click', clearHistory);
+                        }
+
+                        // favorite
+                        favBtn.addEventListener('click', ()=>{
+                            const h = loadHistory();
+                            if (h.length === 0){ showToast('ยังไม่มีผลให้บันทึก'); return; }
+                            h[0].favorite = !h[0].favorite;
+                            saveHistory(h);
+                            renderHistory();
+                            setLastTip(h[0].filename, h[0].favorite);
+                            showToast(h[0].favorite ? 'บันทึกไปยังโปรดแล้ว' : 'ยกเลิกรายการโปรดแล้ว');
+                        });
+
+                        // แชร์
+                        shareBtn.addEventListener('click', async ()=>{
+                            const h = loadHistory();
+                            if (h.length === 0){ showToast('ยังไม่มีผลให้แชร์'); return; }
+                            const item = h[0];
+                            const nameToShow = item.displayName || item.filename;
+                            const shareText = `วันนี้ได้กินร้าน: ${nameToShow} (${item.time})\nลองดูนะ!`;
+                            try{
+                                await navigator.clipboard.writeText(shareText);
+                                const url = 'https://line.me/R/share?text=' + encodeURIComponent(shareText);
+                                window.open(url, '_blank');
+                                showToast('ข้อความถูกคัดลอกแล้ว — พร้อมสำหรับแชร์ (เปิด LINE ถัดไป)');
+                            }catch(e){
+                                const url = 'https://line.me/R/share?text=' + encodeURIComponent(shareText);
+                                window.open(url, '_blank');
+                                showToast('เปิดหน้าแชร์ — หากไม่สำเร็จ ให้ลองคัดลอกข้อความเอง');
+                            }
+                        });
+
+                        // คัดลอก
+                        copyBtn.addEventListener('click', async ()=>{
+                            const h = loadHistory();
+                            if (h.length === 0){ showToast('ยังไม่มีผลให้คัดลอก'); return; }
+                            const item = h[0];
+                            const nameToShow = item.displayName || item.filename;
+                            const shareText = `วันนี้ได้ร้าน: ${nameToShow} (${item.time})\nไปกินกันคร้าบ`;
+                            try{
+                                await navigator.clipboard.writeText(shareText);
+                                showToast('คัดลอกข้อความเรียบร้อย');
+                            }catch(e){
+                                showToast('คัดลอกไม่สำเร็จ');
+                            }
+                        });
+                    });
+
+                    /* --- small toast message --- */
+                    function showToast(msg, timeout=1800){
+                        let t = document.getElementById('toastMsg');
+                        if (!t){
+                            t = document.createElement('div');
+                            t.id = 'toastMsg';
+                            t.className = 'toast';
+                            document.body.appendChild(t);
+                        }
+                        t.textContent = msg;
+                        t.classList.add('show');
+                        clearTimeout(t._hide);
+                        t._hide = setTimeout(()=> t.classList.remove('show'), timeout);
+                    }
+
+                </script>
+
+
+                <img id="randomImage" src="clik.gif" alt="Random Food">
+                 <div class="controls-row">
+                    <button id="favBtn" class="small-btn" title="บันทึกเป็นโปรด">♡ บันทึกเป็นโปรด</button>
+                    <button id="shareBtn" class="small-btn" title="แชร์ผลนี้">🔗 แชร์</button>
+                    <button id="copyBtn" class="small-btn" title="คัดลอกข้อความผล">📋 คัดลอกข้อความ</button>
+                    <button id="clearHistoryBtn" class="small-btn" title="ล้างประวัติทั้งหมด">🗑️ ล้างประวัติ</button>
+                </div>
+
+
+                <img src="img/เข้าใช้งานเว็บอย่างง่าย2.png" style="width:80%;margin-top:20px;border-radius:var(--radius)">
+
+            </div>
+        </div>
+
+        <footer>©2025 PlatongGo Team</footer>
+    </div>
+
+    <div id="toastPlaceholder"></div>
+</body>
+</html>
