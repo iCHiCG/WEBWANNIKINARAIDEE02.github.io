@@ -21,11 +21,11 @@
         body{margin:0;background: linear-gradient(135deg,#6f00ff,#facc15,#ff2600);background-size:400% 400%;animation:gradientMove 7s ease infinite;color:var(--text);}
         .wrap{max-width:var(--container);margin:auto;padding:24px}
 
-        /* HEADER */
+        /* หัวจ่ะ */
         header{display:flex;justify-content:center;padding:24px 0}
         header img{width:auto;height:400px;border-radius:20px;}
 
-        /* CARD MAIN */
+        /* bannerrrrr */
         .main-grid{
             background:var(--bg);
             border-radius:var(--radius);
@@ -38,11 +38,11 @@
         @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
         @media(max-width:600px){header img{height:200px}}
 
-        /* LEFT */
+        /* L */
         .left audio{width:100%;margin-bottom:16px}
         .left img{width:100%;border-radius:var(--radius)}
 
-        /* RIGHT */
+        /* R */
         .right{display:flex;flex-direction:column;align-items:center;text-align:center}
         .right button{
             border:0;
@@ -89,7 +89,7 @@
         }
         @keyframes gradientMove{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 
-        /* Loading Animation in Button */
+        /* Loading Animation in Btn */
         .right button.loading {
             pointer-events: none;
             opacity: .8;
@@ -121,7 +121,7 @@
             100% {transform: scale(1); opacity:1}
         }
 
-        /* History / controls */
+        /* History */
         .controls-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:6px}
         .small-btn{
             background:#fff;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:12px;font-weight:700;color:var(--text);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06);
@@ -149,7 +149,7 @@
         }
         .toast.show{opacity:1;pointer-events:auto}
 
-        /* Music Player Style */
+        /* Music PlayerStyle */
         :root{
             --accent: #eb25c0;
             --bg-player: #fff;
@@ -343,16 +343,16 @@
                         audio.addEventListener('pause', ()=>{ playBtn.textContent = '▶'; playBtn.classList.remove('pause'); heart.classList.remove('pulse'); });
                         audio.addEventListener('ended', ()=>{ playBtn.textContent = '▶'; playBtn.classList.remove('pause'); heart.classList.remove('pulse'); audio.currentTime = 0; });
 
-                        // click on progress to seek
+                        // click on progress 
                         progressWrap.addEventListener('click', (e)=>{ const rect = progressWrap.getBoundingClientRect(); const x = e.clientX - rect.left; const pct = x / rect.width; audio.currentTime = pct * audio.duration; });
 
-                        // optional: clicking cover toggles play
+                        // optional: clicking
                         document.getElementById('coverImg').addEventListener('click', ()=>{ if (audio.paused) audio.play(); else audio.pause(); });
 
-                        // preload (improve UX)
+                        
                         audio.load();
 
-                        // fallback: if metadata not ready, try set duration text later
+                        // fallback: if metadata not ready
                         setTimeout(()=> { if (isNaN(audio.duration) === false) durTime.textContent = formatTime(audio.duration); }, 1000);
 
                     })();
@@ -499,7 +499,7 @@
                         el.textContent = `ร้านล่าสุด: ${displayName}` + (favorite ? ' ★ (โปรด)' : '');
                     }
 
-                    /* --- Main changeImage function (สุ่ม + บันทึก) --- */
+                    /* --- สุ่ม + บันทึก --- */
                     function changeImage(){
                         // เล่นเสียงคลิกทันทีที่กดปุ่ม
                         clickAudio.play().catch(e => console.log("Audio play failed:", e)); 
@@ -522,7 +522,7 @@
                             img.src = chosen;
                             img.classList.add("show");
 
-                            // random result sound (เสียงผลลัพธ์)
+                            //(เสียงผลลัพธ์)
                             const s = new Audio(getRandomSound());
                             s.play();
 
@@ -552,7 +552,7 @@
                         }, wait);
                     }
 
-                    /* --- Favorite / Share / Copy handlers --- */
+                    /* --- Favorite / Share / Copy--- */
                     document.addEventListener('DOMContentLoaded', ()=>{
                         // render existing history
                         const historyContainer = document.createElement('div');
@@ -617,7 +617,7 @@
                         });
                     });
 
-                    /* --- small toast message --- */
+                    /* --- smallmessage --- */
                     function showToast(msg, timeout=1800){
                         let t = document.getElementById('toastMsg');
                         if (!t){
@@ -654,4 +654,5 @@
 
     <div id="toastPlaceholder"></div>
 </body>
+
 </html>
